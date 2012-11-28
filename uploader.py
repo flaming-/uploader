@@ -107,6 +107,22 @@ See license.txt for license information.
         by default this is os.path.join('codecs','flac')
     lame_path -- set in your config.txt . The path to your lame binary.
         by default this is os.path.join('codecs','lame')
+    main_action -- what is run when __name__ == '__main__'
+
+--- command line arguments (optional)
+    sys.argv[0] -- always the name of the python file (you can't set this)
+    sys.argv[1] -- infolder, as used for main_action
+    sys.argv[2] -- outfolder, as used for perfect_three_and_upload
+    -action -- change main_action manually rather than from the config file
+    essentially, this happens:
+        globals()[main_action](infolder,outfolder)
+        since we are just using (infolder,outfolder) rather than
+        (infolder=infolder,outfolder=infolder), these arguments rely on the fact
+        that infolder and outfolder are the first arguments defined in the
+        functions.
+        therefore, if your main_action is run() (which does not accept an outfolder
+        argument), you should not define an outfolder, because you will get an
+        error, or worse, unusual behavior.
 
 '''
 
@@ -437,9 +453,11 @@ def run(infolder=None,reuse_extras=False,argv=None):
     else:
         print('Torrent upload failed :(\n')
 
-def run_addformat(folder=None,groupid=None,extras=None):
-    if not folder:
+def run_addformat(infolder=None,groupid=None,extras=None):
+    if not infolder:
         folder = select_folder()
+    else:
+        folder = infolder
     authkey = get_auth()
     tracker_url = get_tracker_url()
     torrent = create_torrent(folder, tracker_url)
@@ -625,16 +643,26 @@ def perfect_three_and_upload(infolder=None,outfolder=None):
         run_addformat(f,groupid,extras=extras)
     
 if __name__ == "__main__":
+    if '-action' in sys.argv:
+        ind = sys.argv.index('-action')
+        main_action = sys.argv[ind+1]
+        sys.argv.remove(ind)
+        sys.argv.remove(main_action)
     if len(sys.argv) > 1:
         folder = sys.argv[1]
     else:
         folder = None
+    if len(sys.argv) > 2:
+        outfolder = sys.argv[2]
+    else:
+        outfolder = None
+    
 ##    print(folder)
 ##    print(sys.argv)           # for debugging
 ##    time.sleep(4)
+
     try:
-        globals()[main_action](infolder=folder)
+        globals()[main_action](infolder,outfolder)
     except Exception, error:
-        print(error)        ## for debugging - leave this active so user can see
+        print(error)    ## for debugging - leave this active so user can see
         time.sleep(10)
-##    run()    
