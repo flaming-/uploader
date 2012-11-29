@@ -581,8 +581,8 @@ def convert_perfect_three(folder=None,outfolder=None):
         files.append((f,metadata))
     for f in flacs:
         reldir = os.path.split(f[1])[0]
-        print(reldir)
-        if not os.path.isdir(reldir):
+##        print(reldir)         #for debugging
+        if reldir and not os.path.isdir(reldir):
             os.makedirs(reldir)
     #prepare the different convert bathes
     converts = []
@@ -662,7 +662,7 @@ if __name__ == "__main__":
 ##    time.sleep(4)
 
     try:
-        globals()[main_action](infolder,outfolder)
+        globals()[main_action](folder,outfolder)
     except Exception, error:
         print(error)    ## for debugging - leave this active so user can see
         time.sleep(10)
