@@ -175,6 +175,8 @@ def select_folder(startfolder=default_folder,msg=None):
     return folder
 
 def create_torrent(folder,tracker):
+    if not isinstance(folder,str):
+        folder = str(folder)
     ct.main(folder,tracker)
 ##    torrent_filename = '%s/%s.torrent' % (folder, folder.split('/')[-1])
     torrent_filename = '%s.torrent' % (os.path.split(folder)[1])
@@ -558,7 +560,7 @@ def flac_to_mp3(file_in,file_out,lame_params,lame_metadata):
     decoder = os.popen('%s -d -s -c "%s"' % (
         flac_path, file_in), 'rb', -1)
 ##    pprint((lame_path, lame_params, file_out, lame_metadata))
-    encoder = os.popen(u'%s --silent %s - -o "%s.mp3" %s' % (
+    encoder = os.popen('%s --silent %s - -o "%s.mp3" %s' % (
         lame_path, lame_params, file_out, lame_metadata) , 'wb', -1)
     for line in decoder.readlines():
         encoder.write(line)
