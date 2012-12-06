@@ -475,17 +475,37 @@ def run_addformat(infolder=None,groupid=None,extras=None):
 ## Code from here down is to deal with converting, and stuff
 
 def get_number_of_processors():
-    try:
+    try:        # python 2.6+
+        import multiprocessing
+        return multiprocessing.cpu_count()
+    except (ImportError,NotImplementedError):
+        pass
+    try:        # windows
         res = int(os.environ['NUMBER_OF_PROCESSORS'])
         if res > 0:
             return res
     except (KeyError, ValueError):
         pass
-    try:
+    try:        # linux
         res = open('/proc/cpuinfo').read().count('processor\t:')
         if res > 0:
             return res
     except IOError:
+        pass
+    try:        # other unix (osx?)
+        try:
+            dmesg = open('/var/run/dmesg.boot').read()
+        except IOError:
+            dmesgProcess = subprocess.Popen(['dmesg'], stdout=subprocess.PIPE)
+            dmesg = dmesgProcess.communicate()[0]
+
+        res = 0
+        while '\ncpu' + str(res) + ':' in dmesg:
+            res += 1
+
+        if res > 0:
+            return res
+    except OSError:
         pass
     raise Exception('cant determine number of processors!')
 
@@ -636,8 +656,8 @@ def perfect_three_and_upload(infolder=None,outfolder=None):
     if not outfolder:
         outfolder = select_folder()
     converted = convert_perfect_three(infolder,outfolder)
-    print(converted)
-    time.sleep(10)
+##    print(converted)              ## for debugging
+##    time.sleep(10)                ## same
     groupid,extras = run(infolder,reuse_extras=True)    # da flac = main upload
     for f in converted:
         run_addformat(f,groupid,extras=extras)
