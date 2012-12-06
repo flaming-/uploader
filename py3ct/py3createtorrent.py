@@ -490,7 +490,8 @@ real one")
     return parser
 
 def main(folder,tracker):
-    
+    if not isinstance(folder,str):
+        folder = str(folder)
     (options, args) = option_parse().parse_args(args = [folder,tracker])
 
     # Positional arguments must have been provided:
