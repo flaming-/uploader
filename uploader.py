@@ -705,4 +705,4 @@ if __name__ == "__main__":
             print(error)    ## for debugging - leave this active so user can see
             time.sleep(10)
     else:
-        globals()[main_action](folder
+        globals()[main_action](folder)
