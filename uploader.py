@@ -108,6 +108,10 @@ See license.txt for license information.
     lame_path -- set in your config.txt . The path to your lame binary.
         by default this is os.path.join('codecs','lame')
     main_action -- what is run when __name__ == '__main__'
+    _bitrates -- by default this is not defined. if you define this in your
+        config.txt, it should look like a tuple of strings:
+        'V0', 'V2', and/or '320' . this variable defines what
+        convert_perfect_three converts to (by default, it does all three).
 
 --- command line arguments (optional)
     sys.argv[0] -- always the name of the python file (you can't set this)
@@ -609,7 +613,12 @@ def convert_perfect_three(folder=None,outfolder=None):
     #prepare the different convert bathes
     converts = []
     return_dirs = []
-    for bitrate in ('V0','V2','320'):
+    global _bitrates
+    try:
+        bitrates = _bitrates
+    except NameError:
+        bitrates = ('V0','V2','320')
+    for bitrate in bitrates:
         #using values of 'artist' and 'album' left over from the above for loop
         makedir = os.path.normpath(
             os.path.join(outfolder,'%s - %s (%s) [%s]' % (
