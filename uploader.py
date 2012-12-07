@@ -94,6 +94,9 @@ See license.txt for license information.
         only prompts you for get_extra_data once, it reuses it between uploads.
     
 --- globals
+    verbose -- self-explanatory
+    debug -- if True, does not catch errors and displays full traceback;
+        if False, displays a short error for 10 seconds (no traceback)
     num_proc -- the value from get_number_of_processors() . This probably should
         not change during the life of the program, unless you install another
         processor while your code is running...? So might as well put it in a
@@ -695,8 +698,11 @@ if __name__ == "__main__":
 ##    print(sys.argv)           # for debugging
 ##    time.sleep(4)
 
-    try:
-        globals()[main_action](folder,outfolder)
-    except Exception, error:
-        print(error)    ## for debugging - leave this active so user can see
-        time.sleep(10)
+    if not debug:
+        try:
+            globals()[main_action](folder,outfolder)
+        except Exception, error:
+            print(error)    ## for debugging - leave this active so user can see
+            time.sleep(10)
+    else:
+        globals()[main_action](folder

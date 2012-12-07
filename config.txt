@@ -6,6 +6,7 @@ PASSWORD = 'PASSWORD'
 default_folder = '/' 				## root
 
 verbose = True      ## should it print out status and stuff or just be quiet
+debug = False       ## displays full traceback instead of short error
 
 flac_path = os.path.join('codecs','flac')   ## can be either relative or not
 lame_path = os.path.join('codecs','lame')
