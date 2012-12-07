@@ -635,6 +635,9 @@ def convert_perfect_three(folder=None,outfolder=None):
             pass        #folder already exists - that's fine
         #copy over 'etc' (cover art, anything else)
         for f in etc:
+            reldir = os.path.split(f)[0]
+            if not os.path.isdir(reldir):
+                os.makedirs(reldir)
             filecopy(f[0],os.path.join(makedir,f[1]))
         #make subdirectories, if any exist
         for convert in converts:
