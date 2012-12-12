@@ -442,7 +442,7 @@ def submit_form_addformat(data,groupid):
 
 def run(infolder=None,reuse_extras=False,argv=None):
     if not infolder:
-        folder = select_folder()
+        folder = select_folder('Select the folder to be uploaded')
     else:
         folder = infolder
     authkey = get_auth()
@@ -464,13 +464,14 @@ def run(infolder=None,reuse_extras=False,argv=None):
 
 def run_addformat(infolder=None,groupid=None,extras=None):
     if not infolder:
-        folder = select_folder()
+        folder = select_folder('Select the folder to be uploaded')
     else:
         folder = infolder
     authkey = get_auth()
     tracker_url = get_tracker_url()
     torrent = create_torrent(folder, tracker_url)
     tags = get_tags(folder,addformat=True)
+    assert groupid, 'you didnt specify a groupid'
     if not extras:
         extras = get_extra_data(addformat=True)
     data = create_data_addformat(torrent, tags, extras, authkey, groupid)
@@ -571,7 +572,10 @@ def flac_to_mp3(file_in,file_out,lame_params,lame_metadata):
         lame_path, lame_params, file_out, lame_metadata) , 'wb', -1)
     for line in decoder.readlines():
         encoder.write(line)
-    decoder.flush()
+    try:
+        decoder.flush()
+    except IOError: ## apparently OSX doesn't like flushing a read-only buffer
+        pass
     decoder.close()
     encoder.flush()
     encoder.close()
@@ -581,9 +585,10 @@ def convert_perfect_three(folder=None,outfolder=None):
     #e.g., if outfolder = /files/, three folders would be created
     #/files/whatever [V2] , /files/whatever [V0] , /files/whatever [320]
     if not folder:
-        folder = select_folder(msg='Select infolder')
+        folder = select_folder(msg='Select the folder to be converted')
     if not outfolder:
-        outfolder = select_folder(msg='Select outfolder')
+        outfolder = select_folder(msg='Select the folder where the new\
+folders should be placed')
     #get files
     flacs = []      #contains tuples: (abspath, rel_path, filename)
     logs_cues = []  #same. we don't copy these
@@ -669,9 +674,11 @@ def convert_perfect_three(folder=None,outfolder=None):
 
 def perfect_three_and_upload(infolder=None,outfolder=None):
     if not infolder:
-        infolder = select_folder()
+        infolder = select_folder(
+            msg='Select the folder to be converted and uploaded')
     if not outfolder:
-        outfolder = select_folder()
+        outfolder = select_folder(msg='Select the folder where the converted \
+folders should be placed')
     converted = convert_perfect_three(infolder,outfolder)
 ##    print(converted)              ## for debugging
 ##    time.sleep(10)                ## same
