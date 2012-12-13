@@ -572,10 +572,8 @@ def flac_to_mp3(file_in,file_out,lame_params,lame_metadata):
         lame_path, lame_params, file_out, lame_metadata) , 'wb', -1)
     for line in decoder.readlines():
         encoder.write(line)
-    try:
+    if not sys.platform == 'darwin':    #OSX doesn't like flushing read buffers
         decoder.flush()
-    except IOError: ## apparently OSX doesn't like flushing a read-only buffer
-        pass
     decoder.close()
     encoder.flush()
     encoder.close()
