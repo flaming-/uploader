@@ -602,6 +602,8 @@ folders should be placed')
                 etc.append((abspath,relpath(abspath,folder),filename))
     #get metadata
     files = []          ## tuples: ((abspath,rel_path,filename),metadata)
+    if not flacs:
+        raise Exception('No flacs found for conversion!')
     for f in flacs:
         flacfile = flac.FLAC(f[0])
         artist = flacfile['artist'][0].encode('utf-8')
@@ -641,7 +643,7 @@ folders should be placed')
             pass        #folder already exists - that's fine
         #copy over 'etc' (cover art, anything else)
         for f in etc:
-            reldir = os.path.split(f)[0]
+            reldir = os.path.join(makedir,os.path.split(f[1])[0])
             if not os.path.isdir(reldir):
                 os.makedirs(reldir)
             filecopy(f[0],os.path.join(makedir,f[1]))
