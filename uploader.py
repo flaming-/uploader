@@ -111,6 +111,8 @@ See license.txt for license information.
     lame_path -- set in your config.txt . The path to your lame binary.
         by default this is os.path.join('codecs','lame')
     main_action -- what is run when __name__ == '__main__'
+    do_main_action -- default True , set to False if you want to not call
+        main_action when the script is run
     _bitrates -- by default this is not defined. if you define this in your
         config.txt, it should look like a tuple of strings:
         'V0', 'V2', and/or '320' . this variable defines what
@@ -142,6 +144,8 @@ from py3ct import py3createtorrent as ct
 relpath = ct.relpath
 cookie = req.build_opener(req.HTTPCookieProcessor(),mph.MultipartPostHandler)
 req.install_opener(cookie)
+
+do_main_action = True
 
 curdir = os.path.split(sys.argv[0])[0]
 configfile = os.path.join(curdir,'config.txt')
@@ -685,6 +689,21 @@ folders should be placed')
     groupid,extras = run(infolder,reuse_extras=True)    # da flac = main upload
     for f in converted:
         run_addformat(f,groupid,extras=extras)
+
+def perfect_three_and_upload_noflac(infolder=None,outfolder=None):
+    if not infolder:
+        infolder = select_folder(
+            msg='Select the folder to be converted and uploaded')
+    if not outfolder:
+        outfolder = select_folder(msg='Select the folder where the converted \
+folders should be placed')
+    converted = convert_perfect_three(infolder,outfolder)
+##    print(converted)              ## for debugging
+##    time.sleep(10)                ## same
+    groupid = raw_input('groupid?\n>>> ')
+    extras = get_extra_data(addformat=True)
+    for f in converted:
+        run_addformat(f,groupid,extras=extras)
     
 if __name__ == "__main__":
     if '-action' in sys.argv:
@@ -705,11 +724,12 @@ if __name__ == "__main__":
 ##    print(sys.argv)           # for debugging
 ##    time.sleep(4)
 
-    if not debug:
-        try:
-            globals()[main_action](folder,outfolder)
-        except Exception, error:
-            print(error)    ## for debugging - leave this active so user can see
-            time.sleep(10)
-    else:
-        globals()[main_action](folder)
+    if do_main_action:
+        if not debug:
+            try:
+                globals()[main_action](folder,outfolder)
+            except Exception, error:
+                print(error)    ## for debugging - leave this active so user can see
+                time.sleep(10)
+        else:
+            globals()[main_action](folder)
