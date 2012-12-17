@@ -637,7 +637,8 @@ folders should be placed')
                                     artist,album,year,bitrate)))
         return_dirs.append(makedir)
         converts.append([(f[0][0],
-                          os.path.join(makedir,f[0][1][:-5]), #-5 = '.flac'
+                          os.path.join(
+                              str(makedir),str(f[0][1][:-5])), #-5 = '.flac'
                           make_lame_params(bitrate),
                           make_lame_metadata(f[1])) for f in files])
         
@@ -705,7 +706,7 @@ folders should be placed')
     for f in converted:
         run_addformat(f,groupid,extras=extras)
     
-if __name__ == "__main__":
+if __name__ == "__main__" and do_main_action:
     if '-action' in sys.argv:
         ind = sys.argv.index('-action')
         main_action = sys.argv[ind+1]
@@ -724,12 +725,11 @@ if __name__ == "__main__":
 ##    print(sys.argv)           # for debugging
 ##    time.sleep(4)
 
-    if do_main_action:
-        if not debug:
-            try:
-                globals()[main_action](folder,outfolder)
-            except Exception, error:
-                print(error)    ## for debugging - leave this active so user can see
-                time.sleep(10)
-        else:
-            globals()[main_action](folder)
+    if not debug:
+        try:
+            globals()[main_action](folder,outfolder)
+        except Exception, error:
+            print(error)    ## for debugging - leave this active so user can see
+            time.sleep(10)
+    else:
+        globals()[main_action](folder)
