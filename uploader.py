@@ -132,6 +132,7 @@ See license.txt for license information.
         therefore, if your main_action is run() (which does not accept an outfolder
         argument), you should not define an outfolder, because you will get an
         error, or worse, unusual behavior.
+    -debug -- sets debug to True; same behavior as if itwas set in config.txt
 
 '''
 
@@ -712,6 +713,9 @@ if __name__ == "__main__" and do_main_action:
         main_action = sys.argv[ind+1]
         sys.argv.remove(ind)
         sys.argv.remove(main_action)
+    if '-debug' in sys.argv:
+        debug = True
+        sys.argv.remove('-debug')
     if len(sys.argv) > 1:
         folder = sys.argv[1]
     else:
