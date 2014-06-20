@@ -144,6 +144,7 @@ from py3ct import py3createtorrent as ct
 
 relpath = ct.relpath
 cookie = req.build_opener(req.HTTPCookieProcessor(),mph.MultipartPostHandler)
+cookie.addheaders = [('User-agent', 'Mozilla/5.0')]
 req.install_opener(cookie)
 
 do_main_action = True
